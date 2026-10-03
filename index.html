@@ -181,6 +181,8 @@ tbody tr:hover { background: rgba(0,0,0,0.02); }
 th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; background: var(--bg); }
 .tag { font-family: var(--mono); font-size: 11px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--bg); }
 .chart-pie { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--accent) 0% 45%, #E5E2DC 45% 70%, #1F1C18 70% 100%); margin: 0 auto 24px; }
+
+  @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr !important; gap: 32px; } }
 </style>
 </head>
 <body>
@@ -455,7 +457,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
       if (entry.isIntersecting) {
         if (!entry.target.classList.contains('visible')) {
           entry.target.classList.add('visible');
-          triggerHaptic(10);
+          triggerHaptic(40);
         }
       }
     });
@@ -468,10 +470,14 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     });
   });
 
+  
+  // Unlock haptics on first touch
+  document.addEventListener('touchstart', function() {}, {once:true});
+  document.addEventListener('click', function() {}, {once:true});
   // Hardware Buttons Interactivity
   let isScreenOff = false;
   document.querySelector('.iphone-btn.power').addEventListener('click', () => {
-    triggerHaptic(20);
+    triggerHaptic(60);
     isScreenOff = !isScreenOff;
     document.getElementById('screen-overlay').classList.toggle('off', isScreenOff);
   });
@@ -491,8 +497,8 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
       volHud.classList.remove('show');
     }, 2000);
   }
-  document.querySelector('.iphone-btn.vol-up').addEventListener('click', () => { triggerHaptic(10); showVolume(10); });
-  document.querySelector('.iphone-btn.vol-down').addEventListener('click', () => { triggerHaptic(10); showVolume(-10); });
+  document.querySelector('.iphone-btn.vol-up').addEventListener('click', () => { triggerHaptic(50); showVolume(10); });
+  document.querySelector('.iphone-btn.vol-down').addEventListener('click', () => { triggerHaptic(50); showVolume(-10); });
 
   let isSilent = false;
   let silentTimeout;
@@ -505,7 +511,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
 
   document.querySelector('.iphone-btn.silent').addEventListener('click', () => {
     if (isScreenOff) return;
-    triggerHaptic([10, 40, 10]);
+    triggerHaptic([40, 60, 40]);
     isSilent = !isSilent;
     silentText.innerText = isSilent ? 'Silent Mode On' : 'Silent Mode Off';
     silentText.style.color = isSilent ? '#ff453a' : '#fff';
