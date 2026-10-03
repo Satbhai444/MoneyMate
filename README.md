@@ -1,7 +1,5 @@
-# Money Mate 💸
+# <img src="logo.png" width="48" align="center" alt="Money Mate Logo"> Money Mate 💸
 An AI-powered Telegram bot landing page that enables lightning-fast expense tracking and ledger management directly from your chat.
-
-![Money Mate Banner](logo.png)
 
 ## Overview
 Money Mate revolutionizes personal finance tracking by eliminating the need for complex apps. Built entirely on Telegram, it acts as your personal AI accountant. Simply chat naturally—send text or voice notes—and Money Mate will parse the intent, categorize the transaction, and manage your ledgers in real-time.
