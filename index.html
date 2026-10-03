@@ -142,7 +142,7 @@ nav .btn { padding: 10px 16px; font-size: 14px; }
 .demo-input-wrap { display: flex; gap: 12px; max-width: 600px; margin: 0 auto 32px; }
 .demo-input { flex: 1; padding: 16px 20px; border-radius: 12px; border: 1px solid var(--line); font: 400 16px var(--body); outline: none; transition: border-color 0.2s; }
 .demo-input:focus { border-color: var(--accent); }
-.demo-output { background: var(--bg); padding: 24px; border-radius: 12px; text-align: left; font-family: var(--mono); font-size: 14px; min-height: 200px; border: 1px solid var(--line); max-width: 600px; margin: 0 auto; box-shadow: inset 0 2px 8px rgba(0,0,0,0.02); }
+.demo-output { overflow-x: auto; background: var(--bg); padding: 24px; border-radius: 12px; text-align: left; font-family: var(--mono); font-size: 14px; min-height: 200px; border: 1px solid var(--line); max-width: 600px; margin: 0 auto; box-shadow: inset 0 2px 8px rgba(0,0,0,0.02); }
 
   /* Scroll Reveal Animation */
   .reveal-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -183,6 +183,214 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
 .chart-pie { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--accent) 0% 45%, #E5E2DC 45% 70%, #1F1C18 70% 100%); margin: 0 auto 24px; }
 
   @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr !important; gap: 32px; } }
+
+/* From Uiverse.io by Galahhad */ 
+.search-label {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  padding: 9px;
+  cursor: text;
+  flex: 1; /* Added flex: 1 so it takes up space like the old input */
+}
+
+.search-label:hover {
+  border-color: var(--accent);
+}
+
+.search-label:focus-within {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+
+.search-label input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.search-label input {
+  outline: none;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--fg); font-family: var(--body); font-size: 15px;
+}
+
+.search-label input:focus+.slash-icon,
+.search-label input:valid+.slash-icon {
+  display: none;
+}
+
+.search-label input:valid~.search-icon {
+  display: block;
+}
+
+.search-label input:valid {
+  width: calc(100% - 22px);
+  transform: translateX(20px);
+}
+
+.search-label svg,
+.slash-icon {
+  position: absolute;
+  color: var(--muted);
+}
+
+.search-icon {
+  display: none;
+  width: 12px;
+  height: auto;
+}
+
+.slash-icon {
+  right: 7px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 3px;
+  text-align: center;
+  box-shadow: inset 0 -2px 0 0 var(--line);
+  cursor: pointer;
+  font-size: 12px;
+  width: 15px;
+}
+
+.slash-icon:active {
+  box-shadow: inset 0 1px 0 0 #3f3f3f, inset 0 0 1px 1px rgb(94, 93, 93), 0 1px 2px 0 rgba(28, 28, 29, 0.4);
+  text-shadow: none;
+  color: transparent; /* active */
+}
+
+
+/* From Uiverse.io by FColombati */ 
+.button {
+  all: unset;
+  cursor: pointer;
+  -webkit-tap-highlight-color: #ffffff;
+  position: relative;
+  border-radius: 100em;
+  background-color: var(--accent);
+  box-shadow:
+    -0.15em -0.15em 0.15em -0.075em rgba(5, 5, 5, 0.25),
+    0.0375em 0.0375em 0.0675em 0 rgba(5, 5, 5, 0.1);
+}
+
+.button::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: calc(100% + 0.3em);
+  height: calc(100% + 0.3em);
+  top: -0.15em;
+  left: -0.15em;
+  border-radius: inherit;
+  background: linear-gradient(
+    -135deg,
+    rgba(5, 5, 5, 0.5),
+    transparent 20%,
+    transparent 100%
+  );
+  filter: blur(0.0125em);
+  opacity: 0.25;
+  mix-blend-mode: multiply;
+}
+
+.button .button-outer {
+  position: relative;
+  z-index: 1;
+  border-radius: inherit;
+  transition: box-shadow 300ms ease;
+  will-change: box-shadow;
+  box-shadow:
+    0 0.05em 0.05em -0.01em rgba(5, 5, 5, 1),
+    0 0.01em 0.01em -0.01em rgba(5, 5, 5, 0.5),
+    0.15em 0.3em 0.1em -0.01em rgba(5, 5, 5, 0.25);
+}
+
+.button:hover .button-outer {
+  box-shadow:
+    0 0 0 0 rgba(5, 5, 5, 1),
+    0 0 0 0 rgba(5, 5, 5, 0.5),
+    0 0 0 0 rgba(5, 5, 5, 0.25);
+}
+
+.button-inner {
+  --inset: 0.035em;
+  position: relative;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1em 1.5em;
+  background-image: linear-gradient(
+    135deg,
+    #44baf2,
+    #1d95d1
+  );
+  transition:
+    box-shadow 300ms ease,
+    clip-path 250ms ease,
+    background-image 250ms ease,
+    transform 250ms ease;
+  will-change: box-shadow, clip-path, background-image, transform;
+  overflow: clip;
+  clip-path: inset(0 0 0 0 round 100em);
+  box-shadow:
+    0 0 0 0 inset rgba(5, 5, 5, 0.1),
+    -0.05em -0.05em 0.05em 0 inset rgba(5, 5, 5, 0.25),
+    0 0 0 0 inset rgba(5, 5, 5, 0.1),
+    0 0 0.05em 0.2em inset rgba(255, 255, 255, 0.25),
+    0.025em 0.05em 0.1em 0 inset rgba(255, 255, 255, 1),
+    0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.25),
+    -0.075em -0.25em 0.25em 0.1em inset rgba(5, 5, 5, 0.25);
+}
+
+.button:hover .button-inner {
+  clip-path: inset(
+    clamp(1px, 0.0625em, 2px) clamp(1px, 0.0625em, 2px)
+      clamp(1px, 0.0625em, 2px) clamp(1px, 0.0625em, 2px) round 100em
+  );
+  box-shadow:
+    0.1em 0.15em 0.05em 0 inset rgba(5, 5, 5, 0.75),
+    -0.025em -0.03em 0.05em 0.025em inset rgba(5, 5, 5, 0.5),
+    0.25em 0.25em 0.2em 0 inset rgba(5, 5, 5, 0.5),
+    0 0 0.05em 0.5em inset rgba(255, 255, 255, 0.15),
+    0 0 0 0 inset rgba(255, 255, 255, 1),
+    0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.25),
+    -0.075em -0.12em 0.2em 0.1em inset rgba(5, 5, 5, 0.25);
+}
+
+.button .button-inner span {
+  position: relative;
+  z-index: 4;
+  font-family: "Inter", sans-serif;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+  color: #ffffff;
+  background: transparent;
+  /* -webkit-/* background-clip: text; */ */
+  /* background-clip: text; */
+  transition: transform 250ms ease;
+  display: block;
+  will-change: transform;
+  text-shadow: rgba(0, 0, 0, 0.1) 0 0 0.1em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.button:hover .button-inner span {
+  transform: scale(0.975);
+}
+
+.button:active .button-inner {
+  transform: scale(0.975);
+}
+
 </style>
 </head>
 <body>
@@ -342,8 +550,22 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     <div class="label" style="margin-bottom: 12px;">Try it out</div>
     <h2>Test the AI Parser</h2>
     <div class="demo-input-wrap">
-      <input type="text" id="demo-input" class="demo-input" placeholder="e.g. Spent 400 on movie tickets with friends" value="Spent 400 on movie tickets">
-      <button class="btn" onclick="runDemo()">Parse Text</button>
+      <label class="search-label">
+        <input type="text" id="demo-input" name="text" class="input" required="" placeholder="Type here..." value="Spent 400 on movie tickets">
+        <kbd class="slash-icon">/</kbd>
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 512 512" xml:space="preserve">
+          <g>
+            <path d="M55.146 51.887 41.588 37.786A22.926 22.926 0 0 0 46.984 23c0-12.682-10.318-23-23-23s-23 10.318-23 23 10.318 23 23 23c4.761 0 9.298-1.436 13.177-4.162l13.661 14.208c.571.593 1.339.92 2.162.92.779 0 1.518-.297 2.079-.837a3.004 3.004 0 0 0 .083-4.242zM23.984 6c9.374 0 17 7.626 17 17s-7.626 17-17 17-17-7.626-17-17 7.626-17 17-17z" fill="currentColor" data-original="#000000" class=""></path>
+          </g>
+        </svg>
+      </label>
+      <button class="button" onclick="runDemo()">
+        <div class="button-outer">
+          <div class="button-inner">
+            <span>Parse Text</span>
+          </div>
+        </div>
+      </button>
     </div>
     <div class="demo-output" id="demo-output">
       <span style="color:var(--muted)">JSON output will appear here...</span>
@@ -435,7 +657,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     else if(lowerInput.includes('friend') || lowerInput.includes('movie')) category = "Entertainment";
 
     setTimeout(() => {
-      out.innerHTML = `<pre style="margin:0; color:var(--fg); line-height:1.6;">{
+      out.innerHTML = `<pre style="margin:0; color:var(--fg); line-height:1.6; white-space: pre-wrap; word-break: break-word;">{
   <span style="color:var(--accent);">"intent"</span>: <span style="color:#0088cc;">"expense"</span>,
   <span style="color:var(--accent);">"amount"</span>: <span style="color:#0088cc;">${amount}</span>,
   <span style="color:var(--accent);">"category"</span>: <span style="color:#0088cc;">"${category}"</span>,
@@ -582,6 +804,5 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
 
 </body>
 </html>
-
 
 
