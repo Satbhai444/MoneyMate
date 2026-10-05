@@ -685,8 +685,8 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     ['Health',            ['medicine', 'dawai', 'doctor', 'pharmacy', 'gym', 'hospital']]
   ].map(([name, words]) => [name, new RegExp('\\b(?:' + words.join('|') + ')', 'i')]);
 
-  // Supports: 500, ₹500, Rs 500, 1,500, 1,00,000, 99.50, 1.5k, 2 lakh
-  const AMOUNT_RE = /(?:₹|rs\.?|inr)?\s*(\d{1,3}(?:,\d{2,3})+|\d+)(?:\.(\d{1,2}))?(?:\s*(k|lakh|lac)\b)?/gi;
+  // Supports: $500, 500$, €50, ₹500, Rs 500, 1,500, 1,00,000, 99.50, 1.5k, 2 lakh
+  const AMOUNT_RE = /(?:₹|\$|€|£|rs\.?|inr|usd)?\s*(\d{1,3}(?:,\d{2,3})+|\d+)(?:\.(\d{1,2}))?(?:\s*(k|lakh|lac)\b)?(?:\s*(?:₹|\$|€|£|inr|usd))?/gi;
 
   function parseAmounts(text) {
     const out = [];
@@ -702,20 +702,30 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
 
   function detectIntent(l) {
     if (/(paid (me )?back|wapas|waapas|returned|lauta|settle)/.test(l)) return 'settlement';
-    if (/(borrow|udh?aa?r (liye|liya|li)\b|\bse (liye|liya)\b)/.test(l)) return 'borrowed';
-    if (/(\blent\b|udh?aa?r|\bgave\b.*\bto\b|\bko\b.*\bdiye\b)/.test(l)) return 'lent';
+    if (/(borrow|udh?aa?r (liye|liya|li)\b|\b(se|from)\b.*\b(liye|liya|li|took)\b)/.test(l)) return 'borrowed';
+    if (/(\blent\b|udh?aa?r|\bgave\b.*\bto\b|\b(ko|se|to)\b.*\b(diye|diya|di|gave)\b)/.test(l)) return 'lent';
     if (/(salary|received|credited|income|got paid|refund|\baaye\b|\baayi\b|\baaya\b|\bmila\b|\bmile\b)/.test(l)) return 'income';
     return 'expense';
   }
 
-  const NOT_A_PERSON = new Set(['I', 'Spent', 'Gave', 'Paid', 'Bought', 'Got', 'Received', 'Salary', 'Uber', 'Ola', 'Bhai', 'Aaj', 'Today', 'Movie', 'Chai', 'Lent', 'Borrowed', 'Electricity']);
+  const NOT_A_PERSON = new Set(['i', 'he', 'she', 'they', 'we', 'you', 'the', 'a', 'an', 'my', 'his', 'her', 'and', 'aur', 'ko', 'se', 'ne', 'to', 'from', 'with', 'spent', 'gave', 'paid', 'bought', 'got', 'received', 'salary', 'uber', 'ola', 'bhai', 'aaj', 'today', 'movie', 'chai', 'lent', 'borrowed', 'electricity', 'bill']);
   function findPerson(text) {
-    const patterns = [/\b(?:to|from|with)\s+([A-Z][a-z]+)/, /\b([A-Z][a-z]+)\s+(?:ko|se|ne|paid|returned|gave)\b/];
+    const patterns = [/\b(?:to|from|with)\s+([a-zA-Z]+)/i, /\b([a-zA-Z]+)\s+(?:ko|se|ne|paid|returned|gave)\b/i];
     for (const p of patterns) {
       const m = text.match(p);
-      if (m && !NOT_A_PERSON.has(m[1])) return m[1];
+      if (m && !NOT_A_PERSON.has(m[1].toLowerCase())) {
+        return m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+      }
     }
-    return null;
+    return 'Someone';
+  }
+
+  function detectCurrency(text) {
+    const l = text.toLowerCase();
+    if (/\$|usd|bucks/.test(l)) return 'USD';
+    if (/€|eur|euro/.test(l)) return 'EUR';
+    if (/£|gbp|pound/.test(l)) return 'GBP';
+    return 'INR';
   }
 
   function parseExpense(text) {
@@ -724,6 +734,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     const amounts = parseAmounts(text);
     const isList = amounts.length > 1 && /(\baur\b|\band\b|\bplus\b|\+|,\s*[a-z])/i.test(text);
     const amount = amounts.length ? (isList ? amounts.reduce((a, b) => a + b, 0) : amounts[0]) : null;
+    const currency = detectCurrency(text);
 
     let category = null;
     if (intent === 'expense') {
@@ -735,7 +746,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
       category = 'Ledger';
     }
 
-    const result = { intent, amount, currency: 'INR', category };
+    const result = { intent, amount, currency, category };
     if (isList) result.items = amounts;
     if (intent !== 'expense' && intent !== 'income') result.person = findPerson(text);
     result.date = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
@@ -998,15 +1009,17 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     botDiv.className = 'msg bot';
     
     let botHtml = '';
-    if (jsonResult.type === 'expense') {
-       botHtml = `<b>✅ ₹${jsonResult.amount} · ${jsonResult.category}</b>`;
-    } else if (jsonResult.type === 'lent' || jsonResult.type === 'borrowed') {
-       botHtml = `<b>✅ Ledger Updated</b><br>Amount: ₹${jsonResult.amount} (${jsonResult.person})`;
-    } else if (jsonResult.type === 'income') {
-       botHtml = `<b>🎉 Income Logged</b><br>₹${jsonResult.amount} (${jsonResult.category})`;
+    const sym = { 'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹' }[jsonResult.currency] || '₹';
+    
+    if (jsonResult.type === 'expense' || jsonResult.intent === 'expense') {
+       botHtml = `<b>✅ ${sym}${jsonResult.amount} · ${jsonResult.category}</b>`;
+    } else if (jsonResult.intent === 'lent' || jsonResult.intent === 'borrowed' || jsonResult.intent === 'settlement') {
+       botHtml = `<b>✅ Ledger Updated</b><br>Amount: ${sym}${jsonResult.amount} (${jsonResult.person})`;
+    } else if (jsonResult.intent === 'income') {
+       botHtml = `<b>🎉 Income Logged</b><br>${sym}${jsonResult.amount} (${jsonResult.category})`;
        triggerConfetti();
     } else {
-       botHtml = `<b>✅ Logged</b><br>Amount: ₹${jsonResult.amount}`;
+       botHtml = `<b>✅ Logged</b><br>Amount: ${sym}${jsonResult.amount}`;
     }
 
     botDiv.innerHTML = botHtml + `<div class="msg-info"><time>${timeStr}</time></div>`;
