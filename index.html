@@ -481,7 +481,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
         <div class="step">
           <span class="step-num">STEP 01</span>
           <h3>Open the bot</h3>
-          <p>Search <b>@MoneyMateAI_bot</b> in Telegram, or tap any “Open Telegram” button on this page.</p>
+          <p>Search <b>@HeyMoneyMate_bot</b> in Telegram, or tap any “Open Telegram” button on this page.</p>
         </div>
         <div class="step">
           <span class="step-num">STEP 02</span>
@@ -635,18 +635,18 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
         <h2 id="cta-title">Your money, <em>one chat away.</em></h2>
         <p>Open Money Mate on Telegram and log your first expense in under 10 seconds. On desktop? Scan the code with your phone.</p>
         <div class="cta-actions">
-          <a href="https://t.me/MoneyMateAI_bot" class="btn accent tg-link" target="_blank" rel="noopener">
+          <a href="https://t.me/HeyMoneyMate_bot" class="btn accent tg-link" target="_blank" rel="noopener">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             Open in Telegram
           </a>
-          <button type="button" class="username-chip" id="copy-username" aria-label="Copy bot username @MoneyMateAI_bot">
-            @MoneyMateAI_bot
+          <button type="button" class="username-chip" id="copy-username" aria-label="Copy bot username @HeyMoneyMate_bot">
+            @HeyMoneyMate_bot
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           </button>
         </div>
       </div>
       <div class="qr-card">
-        <img src="assets/img/qr-telegram.svg" alt="QR code linking to t.me/MoneyMateAI_bot" width="180" height="180" loading="lazy">
+        <img src="assets/img/qr-telegram.svg" alt="QR code linking to t.me/HeyMoneyMate_bot" width="180" height="180" loading="lazy">
         <small>SCAN TO OPEN</small>
       </div>
     </section>
@@ -665,7 +665,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
         <h4>Resources</h4>
         <a href="pages/Documentation.html">Documentation</a>
         <a href="pages/FAQ.html">FAQ</a>
-        <a href="https://t.me/MoneyMateAI_bot" class="tg-link" target="_blank" rel="noopener">Open Telegram</a>
+        <a href="https://t.me/HeyMoneyMate_bot" class="tg-link" target="_blank" rel="noopener">Open Telegram</a>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
@@ -851,7 +851,7 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
   // ---------- Copy username button ----------
   const copyBtn = document.getElementById('copy-username');
   copyBtn.addEventListener('click', () => {
-    const name = '@MoneyMateAI_bot';
+    const name = '@HeyMoneyMate_bot';
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(name)
         .then(() => showToast('Copied ' + name + ' — paste it in Telegram search'))

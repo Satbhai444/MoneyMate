@@ -2,7 +2,7 @@
    Money Mate — shared scripts (used by every page)
    ========================================================================== */
 (function () {
-  const BOT_USERNAME = '@MoneyMateAI_bot';
+  const BOT_USERNAME = '@HeyMoneyMate_bot';
 
   // ---------- Toasts ----------
   function getToastContainer() {

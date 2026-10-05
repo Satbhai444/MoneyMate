@@ -25,7 +25,7 @@ This repository contains the sleek, highly interactive, and responsive frontend 
 - `styles.css` - Shared design tokens, nav, footer and layout used by every page.
 - `main.js` - Shared scripts: mobile menu, Telegram links, toasts.
 - `logo.png` (original, 1024px) · `logo-512.png` (social previews) · `logo-128.png` (favicon/UI).
-- `qr-telegram.svg` - QR code for `https://t.me/MoneyMateAI_bot`.
+- `qr-telegram.svg` - QR code for `https://t.me/HeyMoneyMate_bot`.
 - `vercel.json` - Clean URLs, caching and security headers.
 
 ## Deployment 🚀
