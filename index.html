@@ -916,7 +916,6 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
   const chatData = [
     { type: 'bot', content: '<b>What can this bot do?</b><br><br>💸 <b>MoneyMate turns everyday chat into a clean expense record.</b><br><br>Just type naturally:<br>• "spent 20 on a water bottle"<br>• "lent 1000 to Rahul"<br>• "Rahul paid back 800"<br><br>✅ Logs amount, category, exact date &amp; time<br>🤝 Tracks who owes you and whom you owe<br>📊 Sends a private link to your monthly report<br>🗣 Understands English and Hinglish<br><br><b>No forms. No extra app. Just chat.</b>', time: '', instant: true },
     { type: 'date', text: 'October 3', instant: true },
-    { type: 'me', text: '/start', time: '8:17 PM', instant: true },
     { type: 'me', text: 'Rahul ko 1000 udhaar diye', time: '8:18 PM' },
     { type: 'bot', content: '<b>✅ Saved</b><br>Lent out ₹1,000 to Rahul.', time: '8:18 PM' },
     { type: 'me', voice: true, duration: '0:04', time: '8:25 PM' },
@@ -973,6 +972,8 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
       
       let content = msg.voice ? createVoiceMsg() : (msg.text || msg.content);
       if (msg.time) {
+        div.style.paddingRight = '60px'; // Prevent short text from overlapping timestamp
+        div.style.minWidth = '80px';
         div.innerHTML = content + `<div class="msg-info"><time>${msg.time}</time></div>`;
       } else {
         div.innerHTML = content;
@@ -1047,6 +1048,8 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     // Add user message
     const meDiv = document.createElement('div');
     meDiv.className = 'msg me';
+    meDiv.style.paddingRight = '60px';
+    meDiv.style.minWidth = '80px';
     meDiv.innerHTML = text + `<div class="msg-info"><time>${timeStr}</time></div>`;
     chatContainer.appendChild(meDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -1064,6 +1067,8 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
     // Add bot response
     const botDiv = document.createElement('div');
     botDiv.className = 'msg bot';
+    botDiv.style.paddingRight = '60px';
+    botDiv.style.minWidth = '80px';
     
     let botHtml = '';
     const sym = { 'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹' }[jsonResult.currency] || '₹';
