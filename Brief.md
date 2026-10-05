@@ -85,3 +85,9 @@ RULES
 - Keep it simple: no extra frameworks or services beyond those named above.
 - After each step, summarize what changed and how I can test it.
 - Ask me only if something blocks you; otherwise make the sensible choice and note it.
+
+FUTURE ROADMAP / PAGES TO ADD LATER (Not required for current scope)
+- Pricing Page (If PRO/Premium features are added, since current says "Free core features")
+- Contact Us / Support (Feedback form or link to Telegram support community)
+- Blog / Updates (To share new features like "New in MoneyMate v2")
+- About Us (Story of why MoneyMate was built)
