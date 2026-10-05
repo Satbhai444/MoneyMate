@@ -8,17 +8,25 @@ This repository contains the sleek, highly interactive, and responsive frontend 
 
 ## Features ✨
 - **Hyper-Realistic iPhone Mockup:** Fully interactive hardware buttons (Power, Volume HUD, Silent Switch dropdown) built purely with CSS and JS.
-- **Scroll-triggered Haptic Feedback:** Uses the Web Vibration API for a tactile experience on supported devices while scrolling and interacting.
-- **Interactive Parsing Demo:** Type an expense naturally and watch the mock backend parse the intent, amount, and category instantly.
-- **Dynamic iOS Toasts:** Realistic notifications pop in and out mimicking the authentic iOS experience.
+- **Scroll-triggered Haptic Feedback:** Uses the Web Vibration API (after the first user interaction, as browsers require) on supported devices.
+- **Interactive Parsing Demo:** Type an expense in Hindi, Hinglish or English and watch an in-browser preview parse the intent, amount (₹, commas, `k`/`lakh`), category and people. Press Enter, `/` to focus, or tap an example chip.
+- **How it works + QR code:** 3-step onboarding and a scannable QR for desktop visitors.
+- **Mobile-first navigation:** Accessible hamburger menu on every page.
+- **SEO ready:** Unique meta per page, absolute Open Graph images, JSON-LD (SoftwareApplication + FAQPage), `sitemap.xml`, `robots.txt`.
+- **Accessible:** Skip link, keyboard focus styles, ARIA labels, `prefers-reduced-motion` support.
 - **Zero Dependencies:** Built with pure HTML, CSS, and Vanilla JavaScript.
 
-## Pages
+## Project Structure
 - `index.html` - The main interactive landing page.
 - `Documentation.html` - Guides on how to use the Telegram bot.
-- `FAQ.html` - Frequently Asked Questions.
+- `FAQ.html` - Frequently Asked Questions (accordion).
 - `Privacy.html` - Privacy Policy.
 - `Terms.html` - Terms of Service.
+- `styles.css` - Shared design tokens, nav, footer and layout used by every page.
+- `main.js` - Shared scripts: mobile menu, Telegram links, toasts.
+- `logo.png` (original, 1024px) · `logo-512.png` (social previews) · `logo-128.png` (favicon/UI).
+- `qr-telegram.svg` - QR code for `https://t.me/MoneyMateAI_bot`.
+- `vercel.json` - Clean URLs, caching and security headers.
 
 ## Deployment 🚀
 This project is deployment-ready for platforms like Vercel, Netlify, or GitHub Pages. The main entry point is configured as `index.html`.
@@ -32,6 +40,8 @@ This project is deployment-ready for platforms like Vercel, Netlify, or GitHub P
 
 ## SEO & Meta 
 The site includes pre-configured Open Graph tags, descriptions, and theme colors optimized for sharing across social platforms (like WhatsApp, Twitter, and Telegram).
+
+> **Custom domain?** All absolute URLs use `https://moneymate-website.vercel.app`. If you move to a custom domain, search-and-replace it across the HTML files, `robots.txt` and `sitemap.xml`.
 
 ---
 *Money Mate - Log expenses just by chatting.*
