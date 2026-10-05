@@ -105,7 +105,7 @@
     // Trigger a very short haptic pulse every 150 pixels of scrolling
     if (scrollAccumulator > 150) {
       scrollAccumulator = 0;
-      navigator.vibrate(3); // 3ms is a subtle "tick" on supported devices
+      navigator.vibrate(25); // 3ms is a subtle "tick" on supported devices
     }
   }, { passive: true });
 
