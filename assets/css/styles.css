@@ -37,25 +37,25 @@ img { max-width: 100%; }
 /* ---------- Navigation ---------- */
 nav.site-nav { 
   display: flex; justify-content: space-between; align-items: center; gap: 16px; 
-  padding: 12px 24px; position: sticky; top: 20px; z-index: 100;
-  max-width: 900px; margin: 0 auto 40px auto; border-radius: 99px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%);
+  padding: 12px 24px; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100;
+  width: calc(100% - 32px); max-width: 900px; border-radius: 99px;
+  background: linear-gradient(135deg, rgba(20,20,20,0.7) 0%, rgba(20,20,20,0.3) 100%);
   backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 1px rgba(0, 0, 0, 0.5);
 }
-body.subpage nav.site-nav { margin-bottom: 60px; margin-top: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.6); }
-.brand { display: flex; align-items: center; gap: 10px; font: 600 24px/1 var(--display); letter-spacing: 0; text-decoration: none; color: var(--fg); }
+body.subpage nav.site-nav { margin-bottom: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 600 24px/1 var(--display); letter-spacing: 0; text-decoration: none; color: #fff; }
 .logo-icon { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 .brand i { font-style: italic; color: var(--accent); }
 .nav-links { display: flex; gap: 24px; }
-.nav-links a { color: var(--muted); text-decoration: none; font: 500 14px var(--body); transition: color 0.2s; }
-.nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--fg); }
+.nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font: 500 14px var(--body); transition: color 0.2s; }
+.nav-links a:hover, .nav-links a[aria-current="page"] { color: #fff; }
 .nav-links a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 6px; text-decoration-thickness: 2px; }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 
-.nav-toggle { display: none; width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; padding: 0; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
-.nav-toggle span { display: block; width: 18px; height: 2px; background: var(--fg); border-radius: 2px; transition: transform 0.25s, opacity 0.2s; }
+.nav-toggle { display: none; width: 42px; height: 42px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); cursor: pointer; padding: 0; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+.nav-toggle span { display: block; width: 18px; height: 2px; background: #fff; border-radius: 2px; transition: transform 0.25s, opacity 0.2s; }
 .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -103,7 +103,7 @@ nav .btn { padding: 10px 16px; font-size: 14px; }
 @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
 
 /* ---------- Subpage layout (Docs, FAQ, Privacy, Terms) ---------- */
-.page-header { text-align: center; margin-bottom: 60px; }
+.page-header { text-align: center; margin-bottom: 60px; padding-top: 100px; }
 .page-header h1 { font-family: var(--display); font-weight: 500; font-size: clamp(40px, 6vw, 56px); margin: 0 0 16px; line-height: 1.1; }
 .page-header p { color: var(--muted); font-size: 18px; max-width: 600px; margin: 0 auto; }
 
