@@ -97,6 +97,13 @@
 .iphone-glare { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 36px; background: linear-gradient(105deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 55%); pointer-events: none; z-index: 30; overflow: hidden; }
 .telegram-app { width: 100%; height: 100%; position: relative; display: flex; flex-direction: column; }
 .home-indicator { width: 120px; height: 4px; background: rgba(0,0,0,0.4); border-radius: 4px; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 50; }
+/* iOS Status Bar */
+.ios-status-bar { position: absolute; top: 0; left: 0; width: 100%; padding: 14px 24px 0; display: flex; justify-content: space-between; align-items: center; z-index: 60; color: #000; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 600; font-size: 14px; pointer-events: none; }
+.ios-status-bar .ios-icons { display: flex; align-items: center; gap: 5px; }
+.ios-signal, .ios-wifi { width: 15px; height: 15px; }
+.ios-battery { width: 22px; height: 11px; border: 1px solid currentColor; border-radius: 4px; padding: 1px; position: relative; margin-left: 2px; }
+.ios-battery::after { content: ''; position: absolute; right: -3px; top: 2px; width: 2px; height: 4px; background: currentColor; border-radius: 0 2px 2px 0; }
+.ios-battery-level { height: 100%; background: currentColor; border-radius: 1px; width: 100%; transition: width 1s, background 0.3s; }
 
 /* iOS Notification */
 .ios-notification { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(255,255,255,0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px; padding: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
@@ -379,6 +386,17 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
             <div class="iphone-speaker"></div>
           </div>
           <div class="iphone-screen">
+            <!-- Dynamic iOS Status Bar -->
+            <div class="ios-status-bar" id="ios-status-bar">
+              <div class="ios-time" id="ios-time">9:41</div>
+              <div class="ios-icons">
+                <svg viewBox="0 0 24 24" class="ios-signal" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 17H3"/><path d="M17 11v6"/><path d="M13 17v-8"/><path d="M9 17V5"/></svg>
+                <span id="ios-signal-text" style="display:none; font-size:11px; margin-right:2px; font-weight:700;">LTE</span>
+                <svg viewBox="0 0 24 24" class="ios-wifi" id="ios-wifi-icon" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                <div class="ios-battery"><div class="ios-battery-level" id="ios-battery-level"></div></div>
+              </div>
+            </div>
+            
             <div class="screen-overlay" id="screen-overlay"></div>
             <div class="silent-hud" id="silent-hud">
               <svg id="silent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;" aria-hidden="true"></svg>
@@ -1036,6 +1054,53 @@ th { color: var(--muted); font-weight: 500; font-family: var(--mono); text-trans
       setTimeout(() => noti.classList.remove('show'), 3000);
     }
   };
+
+  // --- Dynamic iOS Status Bar Logic ---
+  function updateIosStatusBar() {
+    const timeEl = document.getElementById('ios-time');
+    const batteryEl = document.getElementById('ios-battery-level');
+    
+    // Time
+    if (timeEl) {
+      const d = new Date();
+      let h = d.getHours();
+      let m = d.getMinutes();
+      h = h % 12 || 12;
+      m = m < 10 ? '0'+m : m;
+      timeEl.innerText = `${h}:${m}`;
+    }
+
+    // Battery API
+    if (batteryEl && navigator.getBattery) {
+      navigator.getBattery().then(batt => {
+        const updateBatt = () => {
+          batteryEl.style.width = (batt.level * 100) + '%';
+          if (batt.level < 0.2 && !batt.charging) batteryEl.style.background = '#ff3b30'; // Red when low
+          else if (batt.charging) batteryEl.style.background = '#34c759'; // Green when charging
+          else batteryEl.style.background = 'currentColor'; // Normal
+        };
+        updateBatt();
+        batt.addEventListener('levelchange', updateBatt);
+        batt.addEventListener('chargingchange', updateBatt);
+      });
+    } else if (batteryEl) {
+      batteryEl.style.width = '100%';
+    }
+
+    // Network API
+    const wifiIcon = document.getElementById('ios-wifi-icon');
+    const signalText = document.getElementById('ios-signal-text');
+    if (navigator.connection && wifiIcon && signalText) {
+      const type = navigator.connection.type || navigator.connection.effectiveType;
+      if (type && (type.includes('g') || type === 'cellular')) {
+        wifiIcon.style.display = 'none';
+        signalText.innerText = type.toUpperCase() === '4G' ? 'LTE' : '5G';
+        signalText.style.display = 'inline-block';
+      }
+    }
+  }
+  updateIosStatusBar();
+  setInterval(updateIosStatusBar, 30000); // Update every 30s
 })();
 </script>
 
