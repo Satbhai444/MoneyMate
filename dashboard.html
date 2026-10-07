@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Mate - Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #F3F1ED;
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --expense: #EF4444;
+            --income: #10B981;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-blend-mode: overlay;
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #111827;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .value-expense { color: var(--expense); }
+        .value-income { color: var(--income); }
+        .value-balance { color: var(--primary); }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .recent-tx {
+            margin-top: 1rem;
+        }
+
+        .tx-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .tx-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .tx-item:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .tx-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tx-cat {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .tx-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .tx-right {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="app">
+        <div class="header">
+            <h1>Money Mate</h1>
+            <p id="user-greeting">Loading your dashboard...</p>
+        </div>
+
+        <div id="loading-state" class="glass-card loading">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; margin-bottom: 1rem;">
+                <line x1="12" y1="2" x2="12" y2="6"></line>
+                <line x1="12" y1="18" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="6" y2="12"></line>
+                <line x1="18" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+            </svg>
+            <br>Fetching your expenses...
+            <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+        </div>
+
+        <div id="dashboard-content" style="display: none;">
+            <div class="summary-grid">
+                <div class="stat-box">
+                    <div class="stat-title">Total Income</div>
+                    <div class="stat-value value-income" id="total-income">₹0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">Total Expense</div>
+                    <div class="stat-value value-expense" id="total-expense">₹0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-title">Net Balance</div>
+                    <div class="stat-value value-balance" id="net-balance">₹0</div>
+                </div>
+            </div>
+
+            <div class="charts-container mt-4">
+                <div class="glass-card">
+                    <h3 style="margin-top:0;">Expenses by Category</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3 style="margin-top:0;">Income vs Expense</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="balanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card recent-tx">
+                <h3 style="margin-top:0; margin-bottom: 1.5rem;">Recent Transactions</h3>
+                <ul class="tx-list" id="tx-list-container">
+                    <!-- Transactions inserted here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ⚠️ SETUP REQUIRED ⚠️
+        // Put your Supabase URL and Publishable (anon) key here
+        // ==========================================
+        const SUPABASE_URL = 'https://vzhwimocgbgrijidlfmx.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_aLVjpZG1BzbIV3qOzWageQ_zp2xa8kE';
+        // ==========================================
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (!token) {
+                showError("No dashboard token provided in the URL.");
+                return;
+            }
+
+            try {
+                // Fetch user by token
+                const { data: users, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('dashboard_token', token)
+                    .limit(1);
+
+                if (userError || !users || users.length === 0) {
+                    showError("Invalid token or user not found.");
+                    return;
+                }
+
+                const user = users[0];
+                document.getElementById('user-greeting').innerText = `Welcome back, ${user.name}!`;
+
+                // Fetch transactions
+                const { data: transactions, error: txError } = await supabase
+                    .from('transactions')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+
+                if (txError) {
+                    showError("Could not fetch transactions.");
+                    return;
+                }
+
+                renderDashboard(transactions);
+            } catch (e) {
+                console.error(e);
+                showError("Something went wrong connecting to the database. Did you set the Supabase keys in the HTML file?");
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('loading-state').innerHTML = `<span style="color: #EF4444;">❌ ${msg}</span>`;
+        }
+
+        function renderDashboard(transactions) {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('dashboard-content').style.display = 'block';
+
+            let totalIncome = 0;
+            let totalExpense = 0;
+            const categoryTotals = {};
+
+            const txListEl = document.getElementById('tx-list-container');
+            txListEl.innerHTML = '';
+
+            if (transactions.length === 0) {
+                txListEl.innerHTML = '<li style="text-align:center; padding: 2rem;">No transactions yet. Start chatting with the bot!</li>';
+            }
+
+            transactions.forEach(tx => {
+                const amount = parseFloat(tx.amount);
+                
+                // Calculate totals
+                if (tx.transaction_type === 'income' || tx.transaction_type === 'borrowed') {
+                    totalIncome += amount;
+                } else {
+                    totalExpense += amount;
+                    // Aggregate categories for expenses
+                    const cat = tx.category || 'Other';
+                    categoryTotals[cat] = (categoryTotals[cat] || 0) + amount;
+                }
+
+                // Add to list (show top 10)
+                if (txListEl.children.length < 10) {
+                    const isPositive = tx.transaction_type === 'income' || tx.transaction_type === 'borrowed';
+                    const sign = isPositive ? '+' : '-';
+                    const colorClass = isPositive ? 'value-income' : 'value-expense';
+                    
+                    txListEl.innerHTML += `
+                        <li class="tx-item">
+                            <div class="tx-left">
+                                <span class="tx-cat">${tx.category || 'General'}</span>
+                                <span class="tx-desc">${tx.description || tx.transaction_type} • ${new Date(tx.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div class="tx-right ${colorClass}">
+                                ${sign}₹${amount.toFixed(2)}
+                            </div>
+                        </li>
+                    `;
+                }
+            });
+
+            // Update stats
+            document.getElementById('total-income').innerText = `₹${totalIncome.toFixed(2)}`;
+            document.getElementById('total-expense').innerText = `₹${totalExpense.toFixed(2)}`;
+            document.getElementById('net-balance').innerText = `₹${(totalIncome - totalExpense).toFixed(2)}`;
+
+            // Render Charts
+            renderCharts(totalIncome, totalExpense, categoryTotals);
+        }
+
+        function renderCharts(income, expense, categoryTotals) {
+            // Setup Category Chart
+            const catCtx = document.getElementById('categoryChart').getContext('2d');
+            const catLabels = Object.keys(categoryTotals);
+            const catData = Object.values(categoryTotals);
+            
+            // Generate some colors
+            const colors = [
+                '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6'
+            ];
+
+            new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels.length > 0 ? catLabels : ['No Data'],
+                    datasets: [{
+                        data: catLabels.length > 0 ? catData : [1],
+                        backgroundColor: catLabels.length > 0 ? colors : ['#e5e7eb'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Setup Balance Chart
+            const balCtx = document.getElementById('balanceChart').getContext('2d');
+            new Chart(balCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Income', 'Expense'],
+                    datasets: [{
+                        label: 'Amount (₹)',
+                        data: [income, expense],
+                        backgroundColor: ['#10B981', '#EF4444'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
