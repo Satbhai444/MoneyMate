@@ -260,7 +260,7 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_aLVjpZG1BzbIV3qOzWageQ_zp2xa8kE';
         // ==========================================
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function init() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -273,7 +273,7 @@
 
             try {
                 // Fetch user by token
-                const { data: users, error: userError } = await supabase
+                const { data: users, error: userError } = await supabaseClient
                     .from('users')
                     .select('*')
                     .eq('dashboard_token', token)
@@ -288,7 +288,7 @@
                 document.getElementById('user-greeting').innerText = `Welcome back, ${user.name}!`;
 
                 // Fetch transactions
-                const { data: transactions, error: txError } = await supabase
+                const { data: transactions, error: txError } = await supabaseClient
                     .from('transactions')
                     .select('*')
                     .eq('user_id', user.id)
